@@ -7,7 +7,7 @@ workers_dev = true
 kv_namespaces = [
   { binding = "DATA_KV", id = "kv数据库的ID" }
 ]
-
+ 
 [vars]
 IMG_PROXY = ""  #图片代理链接，用于处理图片不显示
 OPEN_TRANSLATE = "true"
