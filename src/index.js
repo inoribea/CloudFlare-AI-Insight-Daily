@@ -38,6 +38,11 @@ export default {
         const path = url.pathname;
         console.log(`Request received: ${request.method} ${path}`);
 
+        // Normalize root path to the main content page
+        if (path === '/') {
+            return Response.redirect(new URL('/getContentHtml', url.origin).toString(), 302);
+        }
+
         // Handle login path specifically
         if (path === '/login') {
             return await handleLogin(request, env);
