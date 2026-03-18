@@ -17,25 +17,6 @@ const ProjectsDataSource = {
             console.error("Error fetching projects data internally:", error.message);
             return { error: "Failed to fetch projects data", details: error.message, items: [] };
         }
-import { fetchData, getISODate, removeMarkdownCodeBlock, formatDateToChineseWithTime, escapeHtml} from '../helpers.js';
-import { callChatAPI } from '../chatapi.js';
-
-const ProjectsDataSource = {
-    fetch: async (env) => {
-        let url = env.PROJECTS_API_URL;
-        // 解决 1042 Error: 如果 URL 指向自己或为空，直接使用镜像源
-        if (!url || url.includes('ai-daily.inoribea.workers.dev') || url.includes('localhost')) {
-            url = 'https://gtrend.yapie.me/repositories?since=daily';
-        }
-        
-        console.log(`Fetching projects from: ${url}`);
-        let projects;
-        try {
-            projects = await fetchData(url);
-        } catch (error) {
-            console.error("Error fetching projects data:", error.message);
-            return { error: "Failed to fetch projects data", details: error.message, items: [] };
-        }
 
         if (!Array.isArray(projects)) {
             console.error("Projects data is not an array:", projects);
