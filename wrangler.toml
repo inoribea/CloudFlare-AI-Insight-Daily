@@ -45,3 +45,18 @@ BOOK_LINK = ""
 INSERT_FOOT = "false"
 INSERT_AD = "false"
 INSERT_APP_URL = "<h3>[查看完整版AI日报↗️ https://ai.hubtoday.app/](https://ai.hubtoday.app/)</h3>"
+
+[observability]
+enabled = false
+head_sampling_rate = 1
+
+[observability.logs]
+enabled = true
+head_sampling_rate = 1
+persist = true
+invocation_logs = true
+
+[observability.traces]
+enabled = false
+persist = true
+head_sampling_rate = 1
