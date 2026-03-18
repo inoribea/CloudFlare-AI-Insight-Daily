@@ -66,6 +66,22 @@ export default {
         try {
             if (path === '/writeData' && request.method === 'POST') {
                 response = await handleWriteData(request, env);
+            } else if (path === '/topone' || path === '/topone/') {
+                // 新增 /topone 路由，解决 GitHub Trending 抓取问题
+                const since = url.searchParams.get('since') || 'daily';
+                const trendingApi = `https://gtrend.yapie.me/repositories?since=${since}`;
+                try {
+                    const res = await fetch(trendingApi);
+                    const data = await res.json();
+                    response = new Response(JSON.stringify(data), {
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                } catch (err) {
+                    response = new Response(JSON.stringify({ error: 'Failed to fetch trending data', details: err.message }), {
+                        status: 500,
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                }
             } else if (path === '/getContentHtml' && request.method === 'GET') {
                 // Prepare dataCategories for the HTML generation
                 const dataCategories = Object.keys(dataSources).map(key => ({

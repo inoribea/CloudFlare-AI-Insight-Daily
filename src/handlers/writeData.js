@@ -18,6 +18,12 @@ export async function handleWriteData(request, env) {
             foloCookie = requestBody.foloCookie; // 获取 foloCookie
         }
 
+        // 如果请求中没有提供 foloCookie，尝试从 KV 中获取
+        if (!foloCookie && env.DATA_KV && env.FOLO_COOKIE_KV_KEY) {
+            foloCookie = await env.DATA_KV.get(env.FOLO_COOKIE_KV_KEY);
+            console.log(`foloCookie not provided in request, retrieved from KV: ${!!foloCookie}`);
+        }
+
         console.log(`Starting /writeData process for category: ${category || 'all'} with foloCookie presence: ${!!foloCookie}`);
 
         let dataToStore = {};

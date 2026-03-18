@@ -1,20 +1,6 @@
 // src/helpers.js
 
 /**
- * 全域參數，用於指定資料抓取的日期。
- * 預設為當前日期，格式為 YYYY-MM-DD。
- */
-export let fetchDate = getISODate();
-
-export function setFetchDate(date) {
-    fetchDate = date;
-}
-
-export function getFetchDate() {
-    return fetchDate;
-}
-
-/**
  * Gets the current date or a specified date in YYYY-MM-DD format.
  * @param {Date} [dateObj] - Optional Date object. Defaults to current date.
  * @returns {string} Date string in YYYY-MM-DD format.
@@ -27,8 +13,17 @@ export function getISODate(dateObj = new Date()) {
         timeZone: 'Asia/Shanghai'
     };
     // 使用 'en-CA' 語言環境，因為它通常會產生 YYYY-MM-DD 格式的日期字串
-    const dateString = dateObj.toLocaleDateString('en-CA', options);
-    return dateString;
+    return dateObj.toLocaleDateString('en-CA', options);
+}
+
+export function getFetchDate() {
+    // 优先返回当前日期，格式为 YYYY-MM-DD
+    return getISODate();
+}
+
+export function setFetchDate(date) {
+    // 这是一个占位符，如果未来需要支持手动设置日期，可以扩展
+    console.log(`Setting fetch date to: ${date}`);
 }
 
 /**
@@ -42,10 +37,10 @@ export function escapeHtml(unsafe) {
     }
     const str = String(unsafe);
     const map = {
-        '&': '&',
-        '<': '<',
-        '>': '>',
-        '"': '"',
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
         "'": '&#039;'
     };
     return str.replace(/[&<>"']/g, (m) => map[m]);
@@ -103,7 +98,7 @@ export function stripHtml(html) {
     let processedHtml = html.replace(/<img[^>]*src="([^"]*)"[^>]*alt="([^"]*)"[^>]*>/gi, (match, src, alt) => {
         return alt ? `[图片: ${alt} ${src}]` : `[图片: ${src}]`;
     });
-    processedHtml = processedHtml.replace(/<img[^>]*src="([^"]*)"[^>]*>/gi, '[图片: $1]');
+    processedHtml = processedHtml.replace(/<img[^>]*src="([^"]*)"[^>]*>/gi, '[图片: ${src}]');
 
     // 处理 video 标签，保留其 src 属性
     processedHtml = processedHtml.replace(/<video[^>]*src="([^"]*)"[^>]*>.*?<\/video>/gi, '[视频: $1]');
@@ -113,22 +108,13 @@ export function stripHtml(html) {
 }
 
 /**
- * Checks if a given date string is within the last specified number of days (inclusive of today).
- * @param {string} dateString - The date string to check (YYYY-MM-DD).
- * @param {number} days - The number of days to look back (e.g., 3 for today and the past 2 days).
- * @returns {boolean} True if the date is within the last 'days', false otherwise.
- */
-/**
  * Converts a date string to a Date object representing the time in Asia/Shanghai timezone.
  * This is crucial for consistent date comparisons across different environments.
  * @param {string} dateString - The date string to convert.
  * @returns {Date} A Date object set to the specified date in Asia/Shanghai timezone.
  */
 export function convertToShanghaiTime(dateString) {
-    // Create a Date object from the ISO string.
     const date = new Date(dateString);
-
-    // Get the date components in Asia/Shanghai timezone
     const options = {
         year: 'numeric',
         month: 'numeric',
@@ -139,18 +125,12 @@ export function convertToShanghaiTime(dateString) {
         hour12: false,
         timeZone: 'Asia/Shanghai'
     };
-
-    // Format the date to a string in Shanghai timezone, then parse it back to a Date object.
-    // This is a common workaround to get a Date object representing a specific timezone.
     const shanghaiDateString = new Intl.DateTimeFormat('en-US', options).format(date);
     return new Date(shanghaiDateString);
 }
 
 export function getShanghaiTime() {
-    // Create a Date object from the ISO string.
     const date = new Date();
-
-    // Get the date components in Asia/Shanghai timezone
     const options = {
         year: 'numeric',
         month: 'numeric',
@@ -161,9 +141,6 @@ export function getShanghaiTime() {
         hour12: false,
         timeZone: 'Asia/Shanghai'
     };
-
-    // Format the date to a string in Shanghai timezone, then parse it back to a Date object.
-    // This is a common workaround to get a Date object representing a specific timezone.
     const shanghaiDateString = new Intl.DateTimeFormat('en-US', options).format(date);
     return new Date(shanghaiDateString);
 }
@@ -171,15 +148,12 @@ export function getShanghaiTime() {
 /**
  * Checks if a given date string is within the last specified number of days (inclusive of today).
  * @param {string} dateString - The date string to check (YYYY-MM-DD or ISO format).
- * @param {number} days - The number of days to look back (e.g., 3 for today and the past 2 days).
+ * @param {number} days - The number of days to look back.
  * @returns {boolean} True if the date is within the last 'days', false otherwise.
  */
 export function isDateWithinLastDays(dateString, days) {
-    // Convert both dates to Shanghai time for consistent comparison
     const itemDate = convertToShanghaiTime(dateString);
-    const today = new Date(fetchDate);
-
-    // Normalize today to the start of its day in Shanghai time
+    const today = new Date(getFetchDate());
     today.setHours(0, 0, 0, 0);
 
     const diffTime = today.getTime() - itemDate.getTime();
@@ -190,8 +164,6 @@ export function isDateWithinLastDays(dateString, days) {
 
 /**
  * Formats an ISO date string to "YYYY年M月D日" format.
- * @param {string} isoDateString - The date string in ISO format (e.g., "2025-05-30T08:24:52.000Z").
- * @returns {string} Formatted date string (e.g., "2025年5月30日").
  */
 export function formatDateToChinese(isoDateString) {
     if (!isoDateString) return '';
@@ -205,11 +177,6 @@ export function formatDateToChinese(isoDateString) {
     return new Intl.DateTimeFormat('zh-CN', options).format(date);
 }
 
-/**
- * Formats an ISO date string to "YYYY年M月D日 HH:MM:SS" format.
- * @param {string} isoDateString - The date string in ISO format (e.g., "2025-05-30T08:24:52.000Z").
- * @returns {string} Formatted date string (e.g., "2025年5月30日 08:24:52").
- */
 export function formatDateToChineseWithTime(isoDateString) {
     if (!isoDateString) return '';
     const date = new Date(isoDateString);
@@ -220,27 +187,18 @@ export function formatDateToChineseWithTime(isoDateString) {
         hour: '2-digit',
         minute: '2-digit',
         second: '2-digit',
-        hour12: false, // 使用24小时制
-        timeZone: 'Asia/Shanghai' // 指定东8时区
+        hour12: false,
+        timeZone: 'Asia/Shanghai'
     };
-    // 使用 'zh-CN' 语言环境以确保中文格式
     return new Intl.DateTimeFormat('zh-CN', options).format(date);
 }
 
-/**
- * 將日期物件格式化為 RSS 2.0 規範的日期字串 (RFC 822)
- * 例如: "Thu, 01 Jan 1970 00:00:00 GMT"
- * @param {Date} date - 日期物件
- * @returns {string} 格式化後的日期字串
- */
 export function formatRssDate(date) {
     if (!date) return new Date().toUTCString();
-    
     return date.toUTCString();
-  }
+}
 
-
-  export function formatDateToGMT0WithTime(isoDateString) {
+export function formatDateToGMT0WithTime(isoDateString) {
     if (!isoDateString) return '';
     const date = new Date(isoDateString);
     const options = {
@@ -250,14 +208,13 @@ export function formatRssDate(date) {
         hour: '2-digit',
         minute: '2-digit',
         second: '2-digit',
-        hour12: false, // 使用24小时制
+        hour12: false,
         timeZone: 'GMT'
     };
-    // 使用 'zh-CN' 语言环境以确保中文格式
     return new Intl.DateTimeFormat('zh-CN', options).format(date);
-}  
+}
 
-  export function formatDateToGMT8WithTime(isoDateString) {
+export function formatDateToGMT8WithTime(isoDateString) {
     if (!isoDateString) return '';
     const date = new Date(isoDateString);
     const options = {
@@ -267,18 +224,12 @@ export function formatRssDate(date) {
         hour: '2-digit',
         minute: '2-digit',
         second: '2-digit',
-        hour12: false, // 使用24小时制
-        timeZone: 'Asia/Shanghai'// 指定东8时区
+        hour12: false,
+        timeZone: 'Asia/Shanghai'
     };
-    // 使用 'zh-CN' 语言环境以确保中文格式
     return new Intl.DateTimeFormat('zh-CN', options).format(date);
-}  
+}
 
-/**
- * Converts English double quotes (") to Chinese double quotes (“”).
- * @param {string} text - The input string.
- * @returns {string} The string with Chinese double quotes.
- */
 export function convertEnglishQuotesToChinese(text) {
     const str = String(text);
     return str.replace(/"/g, '“');
@@ -289,10 +240,6 @@ export function formatMarkdownText(text) {
     return str.replace(/“/g, '"');
 }
 
-/**
- * Generates a random User-Agent string.
- * @returns {string} A random User-Agent string.
- */
 export function getRandomUserAgent() {
     const userAgents = [
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36",
@@ -308,11 +255,6 @@ export function getRandomUserAgent() {
     return userAgents[Math.floor(Math.random() * userAgents.length)];
 }
 
-/**
- * Pauses execution for a specified number of milliseconds.
- * @param {number} ms - The number of milliseconds to sleep.
- * @returns {Promise<void>} A promise that resolves after the specified time.
- */
 export function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
