@@ -4,10 +4,16 @@ import { callChatAPI } from '../chatapi.js';
 
 const ProjectsDataSource = {
     fetch: async (env) => {
-        console.log(`Fetching projects from: ${env.PROJECTS_API_URL}`);
+        let url = env.PROJECTS_API_URL;
+        // 解决 1042 Error: 如果 URL 指向自己或为空，直接使用镜像源
+        if (!url || url.includes('ai-daily.inoribea.workers.dev') || url.includes('localhost')) {
+            url = 'https://gtrend.yapie.me/repositories?since=daily';
+        }
+        
+        console.log(`Fetching projects from: ${url}`);
         let projects;
         try {
-            projects = await fetchData(env.PROJECTS_API_URL);
+            projects = await fetchData(url);
         } catch (error) {
             console.error("Error fetching projects data:", error.message);
             return { error: "Failed to fetch projects data", details: error.message, items: [] };
@@ -22,7 +28,7 @@ const ProjectsDataSource = {
             return { items: [] };
         }
 
-        if (!env.OPEN_TRANSLATE === "true") {
+        if (env.OPEN_TRANSLATE !== "true") {
             console.warn("Skipping paper translations.");
             return projects.map(p => ({ ...p, description_zh: p.description || "" }));
         }
