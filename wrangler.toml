@@ -12,9 +12,9 @@ kv_namespaces = [
 IMG_PROXY = ""  #图片代理链接，用于处理图片不显示
 OPEN_TRANSLATE = "true"
 USE_MODEL_PLATFORM = "GEMINI" #GEMINI, OPEN
-GEMINI_API_KEY = "xxxxxx-xxxxxx"
-GEMINI_API_URL = "https://api-proxy.me/gemini" #网上公共的代理api
-DEFAULT_GEMINI_MODEL = "gemini-2.5-flash-preview-05-20"
+GEMINI_API_KEY = "sk-hKSmsWKpW6vgpnw5Gg6JqZCo0aNU8nZQhQvYCLQhul4nmuhN"
+GEMINI_API_URL = "https://api.linkapi.org" #网上公共的代理api
+DEFAULT_GEMINI_MODEL = "gemini-3.1-flash-lite-preview"
 OPENAI_API_KEY = "sk-xxxxxx" # Replace with your actual OpenAI API Key
 OPENAI_API_URL = "https://api.deepseek.com" # Or your OpenAI compatible API URL
 DEFAULT_OPEN_MODEL = "deepseek-chat"
@@ -29,7 +29,7 @@ TWITTER_LIST_ID = "153028784690326528"
 TWITTER_FETCH_PAGES = "1" 
 REDDIT_LIST_ID = "167576006499975168" 
 REDDIT_FETCH_PAGES = "1" 
-PROJECTS_API_URL = "https://git-trending.justlikemaki.vip/topone/?since=daily"
+PROJECTS_API_URL = "https://ai-daily.inoribea.workers.dev/topone/?since=daily"
 GITHUB_TOKEN = "github_pat_xxxxxx"
 GITHUB_REPO_OWNER = "justlovemaki"
 GITHUB_REPO_NAME = "CloudFlare-AI-Insight-Daily"
