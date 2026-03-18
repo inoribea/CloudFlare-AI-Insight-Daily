@@ -1,5 +1,6 @@
 // src/index.js
 import { handleWriteData } from './handlers/writeData.js';
+import { handleGetTopOne } from './handlers/getTopOne.js';
 import { handleGetContent } from './handlers/getContent.js';
 import { handleGetContentHtml } from './handlers/getContentHtml.js';
 import { handleGenAIContent, handleGenAIPodcastScript, handleGenAIDailyAnalysis } from './handlers/genAIContent.js';
@@ -66,6 +67,8 @@ export default {
         try {
             if (path === '/writeData' && request.method === 'POST') {
                 response = await handleWriteData(request, env);
+            } else if (path === '/topone' || path === '/topone/') {
+                response = await handleGetTopOne(request, env);
             } else if (path === '/getContentHtml' && request.method === 'GET') {
                 // Prepare dataCategories for the HTML generation
                 const dataCategories = Object.keys(dataSources).map(key => ({

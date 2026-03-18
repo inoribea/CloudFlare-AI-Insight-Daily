@@ -1,4 +1,22 @@
 // src/dataSources/projects.js
+import { getISODate, removeMarkdownCodeBlock, formatDateToChineseWithTime, escapeHtml} from '../helpers.js';
+import { callChatAPI } from '../chatapi.js';
+import { getTopOneLogic } from '../handlers/getTopOne.js';
+
+const ProjectsDataSource = {
+    fetch: async (env) => {
+        const url = new URL(env.PROJECTS_API_URL || 'https://ai-daily.inoribea.workers.dev/topone/');
+        const since = url.searchParams.get('since') || 'daily';
+        
+        console.log(`Fetching projects internally for period: ${since}`);
+        let projects;
+        try {
+            // 核心改进：直接调用内部逻辑，绕过 1042 回环报错和外部 521 报错
+            projects = await getTopOneLogic(since);
+        } catch (error) {
+            console.error("Error fetching projects data internally:", error.message);
+            return { error: "Failed to fetch projects data", details: error.message, items: [] };
+        }
 import { fetchData, getISODate, removeMarkdownCodeBlock, formatDateToChineseWithTime, escapeHtml} from '../helpers.js';
 import { callChatAPI } from '../chatapi.js';
 
